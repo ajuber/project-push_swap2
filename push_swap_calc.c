@@ -6,7 +6,7 @@
 /*   By: ajubert <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/24 05:50:31 by ajubert           #+#    #+#             */
-/*   Updated: 2016/06/23 18:49:05 by ajubert          ###   ########.fr       */
+/*   Updated: 2016/06/24 19:32:58 by ajubert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,23 @@ void	search_med(t_e *e, int med)
 	rot_to_min(e);
 }
 
+t_list_cir	*search_merge_pivot(t_e *e, int med)
+{
+	t_list_cir	*tmp;
+	t_list_cir	*tmp_merge;
+	t_list_cir	*tmp_med;
+	//t_list_cir	*tmp_min;
+
+	tmp = e->l_a->next;
+	while (tmp != e->l_a && (tmp->n < med || tmp->n > med))
+		tmp = tmp->next;
+	tmp_med = tmp;
+	while (tmp->n <= med || tmp == e->l_a->next)
+		tmp = tmp->next;
+	tmp_merge = tmp;
+	return (tmp_merge);
+}
+
 int		*create_tab_tri(t_e *e)
 {
 	int			*tab;
@@ -126,11 +143,14 @@ void	resolv(t_e *e, int *tab, int case_med, int case_min)
 	int			min;
 	t_list_cir	*tmp;
 	int			i;
+	t_list_cir	*tmp_merge;
+	int static	test = 1;
 
 	med = tab[case_med];
 	min = tab[case_min];
 	ft_printf("med : %d           min : %d\n", med, min);
 	tmp = e->l_a->next;
+	tmp_merge = search_merge_pivot(e, med);
 	i = -1;
 	while (tmp != e->l_a)
 	{
@@ -152,7 +172,7 @@ void	resolv(t_e *e, int *tab, int case_med, int case_min)
 			ft_putendl("pb");
 			if_display(e, 1);
 			e->size_l--;
-			search_med(e, tab[case_med + 1]);
+			search_med(e, tmp_merge->n);
 	tmp = e->l_b->next;
 	while (tmp != e->l_b)
 	{
@@ -162,10 +182,15 @@ void	resolv(t_e *e, int *tab, int case_med, int case_min)
 		if_display(e, 1);
 		e->size_l++;
 	}
-	if (((case_med) / 2) > case_min)
+	if ((case_med > case_min) && ((((case_med - case_min) / 2 + case_min) < case_med - 1 || test)))
 	{
-		(resolv(e, tab, case_med - 1, case_med / 2));
-		(resolv(e, tab, (case_med) / 2, case_min));
+		if (((case_med - case_min) / 2 + case_min) == case_med - 1)
+			test = 0;
+		ft_printf("----------resolv1-------------");
+		(resolv(e, tab, case_med , (case_med - case_min) / 2 + case_min));
+		test = 1;
+		ft_printf("----------resolv2-------------");
+		(resolv(e, tab, (case_med - case_min) / 2 + case_min, case_min));
 	}
 }
 
