@@ -12,11 +12,10 @@
 
 #include "push_swap.h"
 
-void	tri_a(t_e *e, int nb_rot, int nb_rot_rev, int comp)
+void	tri_a(t_e *e, int nb_rot, int nb_rot_rev)
 {
 	if (nb_rot <= nb_rot_rev)
 	{
-		comp = nb_rot;
 		while (nb_rot-- > 0)
 		{
 			ra(e);
@@ -26,7 +25,6 @@ void	tri_a(t_e *e, int nb_rot, int nb_rot_rev, int comp)
 	}
 	else
 	{
-		comp = nb_rot_rev;
 		while (nb_rot_rev-- > 0)
 		{
 			rra(e);
@@ -82,7 +80,7 @@ int		test_a(t_e *e)
 		return (0);
 	if (tmp == e->l_a)
 	{
-		tri_a(e, nb_rot, nb_rot_rev, comp);
+		tri_a(e, nb_rot, nb_rot_rev);
 		return (1);
 	}
 	return (0);

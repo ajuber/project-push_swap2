@@ -63,7 +63,7 @@ void	rot_to_min(t_e *e)
 void	search_med(t_e *e, int med)
 {
 	t_list_cir	*tmp;
-	t_list_cir	*tmp_min;
+	//t_list_cir	*tmp_min;
 	int			i;
 
 	e->rot = 0;
@@ -73,7 +73,7 @@ void	search_med(t_e *e, int med)
 	{
 		if (tmp->n == med)
 		{
-			tmp_min = tmp;
+			//tmp_min = tmp;
 			e->rot = i;
 		}
 		tmp = tmp->next;
@@ -127,8 +127,8 @@ void	resolv(t_e *e, int *tab, int case_med, int case_min)
 	t_list_cir	*tmp;
 	int			i;
 
-	med = tab[case_med - 1];
-	min = tab[case_min - 1];
+	med = tab[case_med];
+	min = tab[case_min];
 	ft_printf("med : %d           min : %d\n", med, min);
 	tmp = e->l_a->next;
 	i = -1;
@@ -147,8 +147,12 @@ void	resolv(t_e *e, int *tab, int case_med, int case_min)
 		}
 		tmp = tmp->next;
 	}
-	pb(e);
 	search_med(e, med);
+			pb(e);
+			ft_putendl("pb");
+			if_display(e, 1);
+			e->size_l--;
+			search_med(e, tab[case_med + 1]);
 	tmp = e->l_b->next;
 	while (tmp != e->l_b)
 	{
@@ -158,10 +162,10 @@ void	resolv(t_e *e, int *tab, int case_med, int case_min)
 		if_display(e, 1);
 		e->size_l++;
 	}
-	if (((case_med) / 2)  - case_min > 0)
+	if (((case_med) / 2) > case_min)
 	{
+		(resolv(e, tab, case_med - 1, case_med / 2));
 		(resolv(e, tab, (case_med) / 2, case_min));
-		(resolv(e, tab, case_med, case_med / 2));
 	}
 }
 
@@ -169,9 +173,9 @@ int		push_swap_calc(t_e *e)
 {
 //	t_list_cir	*tmp;
 	int			*tab;
-	int			i;
+//	int			i;
 
-	i = 0;
+//	i = 0;
 	if (test_small_list(e))
 		return (1);
 	/*while (e->size_l > 0)
@@ -193,7 +197,7 @@ int		push_swap_calc(t_e *e)
 	tab = create_tab_tri(e);
 	if (tab == NULL)
 		return (0);
-	resolv(e, tab, e->size_l / 2, 1);
+	resolv(e, tab, (e->size_l - 1) / 2, 0);
 	//resolv(e, tab, e->size_l, e->size_l / 2);
 	return (1);
 }
