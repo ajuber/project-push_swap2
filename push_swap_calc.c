@@ -6,7 +6,7 @@
 /*   By: ajubert <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/24 05:50:31 by ajubert           #+#    #+#             */
-/*   Updated: 2016/06/24 19:32:58 by ajubert          ###   ########.fr       */
+/*   Updated: 2016/06/25 17:12:50 by ajubert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,24 @@ void	search_med(t_e *e, int med)
 	rot_to_min(e);
 }
 
+t_list_cir	*search_merge_pivot_rev(t_e *e, int med, int min)
+{
+	t_list_cir	*tmp;
+	t_list_cir	*tmp_merge;
+	t_list_cir	*tmp_med;
+	//t_list_cir	*tmp_min;
+
+	tmp = e->l_a->next;
+	while (tmp != e->l_a && (tmp->n < med || tmp->n > med))
+		tmp = tmp->next;
+	tmp_med = tmp;
+	while ((tmp->n <= med && tmp->n >= min) || tmp == e->l_a->next)
+		tmp = tmp->previous;
+	tmp = tmp->next;
+	tmp_merge = tmp;
+	return (tmp_merge);
+}
+
 t_list_cir	*search_merge_pivot(t_e *e, int med)
 {
 	t_list_cir	*tmp;
@@ -137,6 +155,63 @@ int		*create_tab_tri(t_e *e)
 	return (tab);
 }
 
+void	resolv_rev(t_e *e, int *tab, int case_med, int case_min)
+{
+	int			med;
+	int			min;
+	t_list_cir	*tmp;
+	int			i;
+	t_list_cir	*tmp_merge;
+	int static	test = 1;
+
+	med = tab[case_med];
+	min = tab[case_min];
+	if (med > min)
+	{
+		tmp = e->l_a->next;
+		tmp_merge = search_merge_pivot_rev(e, med, min);
+		i = -1;
+		while (tmp != e->l_a)
+		{
+			i++;
+			if (tmp->n >= min && tmp->n < med)
+			{
+				search_med(e, tmp->n);
+				pb(e);
+				ft_putendl("pb");
+				tmp = e->l_a;
+				if_display(e, 1);
+				e->size_l--;
+				i = -1;
+			}
+			tmp = tmp->next;
+		}
+		search_med(e, med);
+		pb(e);
+		ft_putendl("pb");
+		if_display(e, 1);
+		e->size_l--;
+		search_med(e, tmp_merge->n);
+		tmp = e->l_b->next;
+		while (tmp != e->l_b)
+		{
+			pa(e);
+			ft_putendl("pa");
+			tmp = e->l_b->next;
+			if_display(e, 1);
+			e->size_l++;
+		}
+		if ((case_med > case_min) && ((((case_med - case_min) / 2 + case_min) < case_med - 1 || test)))
+		{
+			if (((case_med - case_min) / 2 + case_min) == case_med - 1)
+				test = 0;
+			(resolv_rev(e, tab, case_med , (case_med - case_min) / 2 + case_min));
+			test = 1;
+			(resolv_rev(e, tab, (case_med - case_min) / 2 + case_min, case_min));
+		}
+	}
+}
+
 void	resolv(t_e *e, int *tab, int case_med, int case_min)
 {
 	int			med;
@@ -148,49 +223,49 @@ void	resolv(t_e *e, int *tab, int case_med, int case_min)
 
 	med = tab[case_med];
 	min = tab[case_min];
-	ft_printf("med : %d           min : %d\n", med, min);
-	tmp = e->l_a->next;
-	tmp_merge = search_merge_pivot(e, med);
-	i = -1;
-	while (tmp != e->l_a)
+	if (med > min)
 	{
-		i++;
-		if (tmp->n >= min && tmp->n < med)
+		tmp = e->l_a->next;
+		tmp_merge = search_merge_pivot(e, med);
+		i = -1;
+		while (tmp != e->l_a)
 		{
-			search_med(e, tmp->n);
-			pb(e);
-			ft_putendl("pb");
-			tmp = e->l_a;
-			if_display(e, 1);
-			e->size_l--;
-			i = -1;
+			i++;
+			if (tmp->n >= min && tmp->n < med)
+			{
+				search_med(e, tmp->n);
+				pb(e);
+				ft_putendl("pb");
+				tmp = e->l_a;
+				if_display(e, 1);
+				e->size_l--;
+				i = -1;
+			}
+			tmp = tmp->next;
 		}
-		tmp = tmp->next;
-	}
-	search_med(e, med);
-			pb(e);
-			ft_putendl("pb");
-			if_display(e, 1);
-			e->size_l--;
-			search_med(e, tmp_merge->n);
-	tmp = e->l_b->next;
-	while (tmp != e->l_b)
-	{
-		pa(e);
-		ft_putendl("pa");
-		tmp = e->l_b->next;
+		search_med(e, med);
+		pb(e);
+		ft_putendl("pb");
 		if_display(e, 1);
-		e->size_l++;
-	}
-	if ((case_med > case_min) && ((((case_med - case_min) / 2 + case_min) < case_med - 1 || test)))
-	{
-		if (((case_med - case_min) / 2 + case_min) == case_med - 1)
-			test = 0;
-		ft_printf("----------resolv1-------------");
-		(resolv(e, tab, case_med , (case_med - case_min) / 2 + case_min));
-		test = 1;
-		ft_printf("----------resolv2-------------");
-		(resolv(e, tab, (case_med - case_min) / 2 + case_min, case_min));
+		e->size_l--;
+		search_med(e, tmp_merge->n);
+		tmp = e->l_b->next;
+		while (tmp != e->l_b)
+		{
+			pa(e);
+			ft_putendl("pa");
+			tmp = e->l_b->next;
+			if_display(e, 1);
+			e->size_l++;
+		}
+		if ((case_med > case_min) && ((((case_med - case_min) / 2 + case_min) < case_med - 1 || test)))
+		{
+			if (((case_med - case_min) / 2 + case_min) == case_med - 1)
+				test = 0;
+			(resolv(e, tab, case_med , (case_med - case_min) / 2 + case_min));
+			test = 1;
+			(resolv(e, tab, (case_med - case_min) / 2 + case_min, case_min));
+		}
 	}
 }
 
@@ -222,7 +297,8 @@ int		push_swap_calc(t_e *e)
 	tab = create_tab_tri(e);
 	if (tab == NULL)
 		return (0);
+	resolv_rev(e, tab, e->size_l - 1, ((e->size_l - 1) / 2) + ((e->size_l - 1) / 4));
+	resolv_rev(e, tab, ((e->size_l - 1) / 2) + ((e->size_l - 1) / 4), (e->size_l - 1) / 2);
 	resolv(e, tab, (e->size_l - 1) / 2, 0);
-	//resolv(e, tab, e->size_l, e->size_l / 2);
 	return (1);
 }
