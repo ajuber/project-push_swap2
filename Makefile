@@ -6,7 +6,7 @@
 #    By: ajubert <marvin@42.fr>                     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/03/05 14:28:27 by ajubert           #+#    #+#              #
-#    Updated: 2016/06/22 17:54:16 by ajubert          ###   ########.fr        #
+#    Updated: 2016/06/26 18:05:46 by ajubert          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,7 +31,9 @@ SRC_C1=	main.c\
 		test_swap_a.c\
 		tri_small_list.c\
 		tri_aa.c\
-		what_ratation.c
+		what_ratation.c\
+		test_bloc_tri.c\
+		tri_small_bloc.c
 
 SRC_C2=	main_checker.c
 

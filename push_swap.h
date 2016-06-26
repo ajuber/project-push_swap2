@@ -6,7 +6,7 @@
 /*   By: ajubert <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/23 23:16:56 by ajubert           #+#    #+#             */
-/*   Updated: 2016/06/23 15:26:44 by ajubert          ###   ########.fr       */
+/*   Updated: 2016/06/26 18:09:05 by ajubert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,5 +69,8 @@ int						what_ratation2a(t_list_cir *tmp_a_next,
 		t_list_cir *tmp_a_previous);
 int						what_ratation2b(t_e *e, t_list_cir *tmp_b_next,
 		t_list_cir *tmp_b_previous);
+int						test_bloc_tri(t_e *e, int med, int min, int size);
+void					tri_small_bloc(t_e *e, t_list_cir *tmp_merge, int *tab, int case_med, int case_min);
+void					search_med(t_e *e, int med);
 
 #endif
