@@ -6,7 +6,7 @@
 /*   By: ajubert <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/24 05:50:31 by ajubert           #+#    #+#             */
-/*   Updated: 2016/06/26 20:17:54 by ajubert          ###   ########.fr       */
+/*   Updated: 2016/06/27 17:40:33 by ajubert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 
 void	rot_to_min(t_e *e, int rot)
 {
+	if (rot == 1)
+	{
 	if (e->rot < e->rev_rot)
 	{
 		while (e->rot > 0)
@@ -34,6 +36,80 @@ void	rot_to_min(t_e *e, int rot)
 			if_display(e, 1);
 		}
 	}
+	}
+	else
+	{
+		if (e->rot_1 < e->rev_rot_1)
+		{
+			while (e->rot_1 > 0)
+			{
+				e->rot_1--;
+				ra(e);
+				ft_putendl("ra");
+				if_display(e, 1);
+			}
+		}
+		else
+		{
+			while (e->rev_rot_1 > 0)
+			{
+				e->rev_rot_1--;
+				rra(e);
+				ft_putendl("rra");
+				if_display(e, 1);
+			}
+		}
+	}
+}
+
+int		search_med_next(t_e *e, int med)
+{
+	t_list_cir	*tmp;
+	//t_list_cir	*tmp_min;
+	int			i;
+
+	e->rot_1 = 0;
+	i = 0;
+	tmp = e->l_a->next;
+	while (tmp != e->l_a)
+	{
+		if (tmp->n == med)
+		{
+			//tmp_min = tmp;
+			e->rot_1 = i;
+		}
+		tmp = tmp->next;
+		i++;
+	}
+	e->rev_rot_1 = e->size_l - e->rot_1;
+	if (e->rot_1 <= e->rev_rot_1)
+		return (e->rot_1);
+	return (e->rev_rot_1);
+}
+
+int		search_med(t_e *e, int med)
+{
+	t_list_cir	*tmp;
+	//t_list_cir	*tmp_min;
+	int			i;
+
+	e->rot = 0;
+	i = 0;
+	tmp = e->l_a->next;
+	while (tmp != e->l_a)
+	{
+		if (tmp->n == med)
+		{
+			//tmp_min = tmp;
+			e->rot = i;
+		}
+		tmp = tmp->next;
+		i++;
+	}
+	e->rev_rot = e->size_l - e->rot;
+	if (e->rot <= e->rev_rot)
+		return (e->rot);
+	return (e->rev_rot);
 }
 
 void	search_min(t_e *e)
@@ -297,21 +373,27 @@ int		push_swap_calc(t_e *e)
 	int			case_next;
 	int			rot;
 	int			rot_min_next;
+	int			size_la;
 //	i = 0;
 	if (test_small_list(e))
 		return (1);
 	tab = create_tab_tri(e);
 	if (tab == NULL)
 		return (0);
+	size_la = e->size_l;
 	case_med = (e->size_l - 1) / 2;
 	case_next = case_med + 1;
 	while (e->size_l > 0)
 	{
 		if (case_med >= 0)
 			rot = search_med(e, tab[case_med]);
-		if (case_next < e->size_lb)
+		else
+			rot = -1;
+		if (case_next < size_la)
 			rot_min_next = search_med_next(e, tab[case_next]);
-		if (rot_min_next < rot + 2)
+		else
+			rot_min_next = -1;
+		if ((rot_min_next != -1 && rot_min_next < rot + 2) || rot == -1)
 		{
 			case_next++;
 			rot_to_min(e, 2);
@@ -324,7 +406,7 @@ int		push_swap_calc(t_e *e)
 		tmp = e->l_b->next;
 		tmp_next = tmp->next;
 		tmp1 = e->l_a->next;
-		if (tmp1->n < tmp->n && tmp->n < tmp_next->n)
+		if (tmp->n < tmp_next->n)
 		{
 			rb(e);
 			ft_putendl("rb");
@@ -336,8 +418,8 @@ int		push_swap_calc(t_e *e)
 		if_display(e, 1);
 	}
 	tmp = e->l_b->next;
-	tmp_next = tmp_next;
-	if (tmp->n < tmp_next)
+	tmp_next = tmp->next;
+	if (tmp->n < tmp_next->n)
 	{
 		rb(e);
 		ft_putendl("rb");

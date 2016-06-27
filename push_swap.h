@@ -6,7 +6,7 @@
 /*   By: ajubert <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/23 23:16:56 by ajubert           #+#    #+#             */
-/*   Updated: 2016/06/26 18:09:05 by ajubert          ###   ########.fr       */
+/*   Updated: 2016/06/27 16:17:52 by ajubert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,9 @@ typedef struct			s_e
 	int					j;
 	long				nb;
 	int					rot;
+	int					rot_1;
 	int					rev_rot;
+	int					rev_rot_1;
 }						t_e;
 
 t_list_cir				*ft_create_racine(void);
@@ -71,6 +73,6 @@ int						what_ratation2b(t_e *e, t_list_cir *tmp_b_next,
 		t_list_cir *tmp_b_previous);
 int						test_bloc_tri(t_e *e, int med, int min, int size);
 void					tri_small_bloc(t_e *e, t_list_cir *tmp_merge, int *tab, int case_med, int case_min);
-void					search_med(t_e *e, int med);
+//void					search_med(t_e *e, int med);
 
 #endif
