@@ -6,7 +6,7 @@
 /*   By: ajubert <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/23 23:16:56 by ajubert           #+#    #+#             */
-/*   Updated: 2016/06/27 16:17:52 by ajubert          ###   ########.fr       */
+/*   Updated: 2016/07/06 16:37:06 by ajubert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,28 @@ typedef struct			s_list_cir
 	struct s_list_cir	*next;
 }						t_list_cir;
 
+typedef struct			s_pivot
+{
+	int					pos_min;
+	int					pos_max;
+	int					rot_a;
+	int					temp_rot_a;
+	int					rot_b;
+	int					temp_rot_b;
+	int					rev_rot_a;
+	int					temp_rev_rot_a;
+	int					rev_rot_b;
+	int					temp_rev_rot_b;
+	int					rrot;
+	int					rrevrot;
+	int					nb_rot_a_revrot_b;
+	int					nb_rot_b_revrot_a;
+	int					nb_rot;
+	int					nb_revrot;
+	int					ind_rot;
+	int					nb_min_rot;
+}						t_pivot;
+
 typedef struct			s_e
 {
 	t_list_cir			*l_a;
@@ -36,6 +58,10 @@ typedef struct			s_e
 	int					rot_1;
 	int					rev_rot;
 	int					rev_rot_1;
+	t_pivot				piv_1;
+	t_pivot				piv_2;
+	t_pivot				piv_3;
+	t_pivot				piv_4;
 }						t_e;
 
 t_list_cir				*ft_create_racine(void);

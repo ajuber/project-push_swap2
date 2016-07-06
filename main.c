@@ -6,7 +6,7 @@
 /*   By: ajubert <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/23 23:26:40 by ajubert           #+#    #+#             */
-/*   Updated: 2016/06/23 15:28:17 by ajubert          ###   ########.fr       */
+/*   Updated: 2016/07/06 16:40:51 by ajubert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,7 @@ int				ft_check_doublon(t_e *e)
 
 void			main_next(t_e *e)
 {
+	e->size_lb = 0;
 	if (!(push_swap_calc(e)))
 	{
 		ft_putendl_fd("Error", 2);

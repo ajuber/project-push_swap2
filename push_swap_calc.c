@@ -6,7 +6,7 @@
 /*   By: ajubert <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/24 05:50:31 by ajubert           #+#    #+#             */
-/*   Updated: 2016/06/27 17:40:33 by ajubert          ###   ########.fr       */
+/*   Updated: 2016/07/06 16:41:03 by ajubert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,207 @@ void	rot_to_min(t_e *e, int rot)
 	}
 }
 
-int		search_med_next(t_e *e, int med)
+void	search_pivot(t_e *e, t_pivot *pivot, int min)
+{
+	t_list_cir	*tmp;
+	t_list_cir	*tmp_next;
+	int			i;
+
+	pivot->rot_a = 0;
+	i = 0;
+	tmp = e->l_a->next;
+	while (tmp != e->l_a)
+	{
+		if (tmp->n == min)
+		{
+			//tmp_min = tmp;
+			pivot->rot_a = i;
+		}
+		tmp = tmp->next;
+		i++;
+	}
+	i = 0;
+	pivot->rev_rot_a = e->size_l - pivot->rot_a;
+	tmp = e->l_b->next;
+	tmp_next = e->l_b->previous;
+	if (tmp == e->l_b)
+	{
+		pivot->rot_b = 0;
+		pivot->rev_rot_b = 0;
+		return ;
+	}
+	while (tmp != e->l_b)
+	{
+		if (tmp->n < min && tmp_next->n > min)
+			pivot->rot_b = i;
+		tmp = tmp->next;
+		tmp_next = e->l_b->previous;
+		i++;
+	}
+	pivot->rev_rot_b = e->size_lb - pivot->rot_b;
+	if (pivot->rot_a <= pivot->rot_b)
+	{
+		pivot->rrot = pivot->rot_a;
+		pivot->temp_rot_b = pivot->rot_b - pivot->rot_a;
+		pivot->temp_rot_a = 0;
+	}
+	else
+	{
+		pivot->rrot = pivot->rot_b;
+		pivot->temp_rot_a = pivot->rot_a - pivot->rot_b;
+		pivot->temp_rot_b = 0;
+	}
+	pivot->nb_rot = pivot->temp_rot_a + pivot->temp_rot_b + pivot->rrot;
+	if (pivot->rev_rot_a <= pivot->rev_rot_b)
+	{
+		pivot->rrevrot = pivot->rev_rot_a;
+		pivot->temp_rev_rot_b = pivot->rev_rot_b - pivot->rev_rot_a;
+		pivot->temp_rev_rot_a = 0;
+	}
+	else
+	{
+		pivot->rrevrot = pivot->rev_rot_b;
+		pivot->temp_rev_rot_a = pivot->rev_rot_a - pivot->rev_rot_b;
+		pivot->temp_rev_rot_b = 0;
+	}
+	pivot->nb_revrot = pivot->temp_rev_rot_a + pivot->temp_rev_rot_b + pivot->rrevrot;
+	pivot->nb_rot_a_revrot_b = pivot->rot_a + pivot->rev_rot_b;
+	pivot->nb_rot_b_revrot_a = pivot->rot_b + pivot->rev_rot_a;
+	if (pivot->nb_revrot < pivot->nb_rot && pivot->nb_revrot < pivot->nb_rot_a_revrot_b && pivot->nb_revrot < pivot->nb_rot_b_revrot_a)
+	{
+		pivot->ind_rot = 4;
+		pivot->nb_min_rot = pivot->nb_revrot;
+	}
+	else if (pivot->nb_rot < pivot->nb_revrot && pivot->nb_rot < pivot->nb_rot_b_revrot_a && pivot->nb_rot < pivot->nb_rot_a_revrot_b)
+	{
+		pivot->ind_rot = 3;
+		pivot->nb_min_rot = pivot->nb_rot;
+	}
+	else if (pivot->nb_rot_b_revrot_a < pivot->nb_rot && pivot->nb_rot_b_revrot_a < pivot->nb_revrot && pivot->nb_rot_b_revrot_a < pivot->nb_rot_a_revrot_b)
+	{
+		pivot->ind_rot = 2;
+		pivot->nb_min_rot = pivot->nb_rot_b_revrot_a;
+	}
+	else
+	{
+		pivot->ind_rot = 1;
+		pivot->nb_min_rot = pivot->nb_rot_a_revrot_b;
+	}
+	//if (pivot->rot_1 <= e->rev_rot_1)
+	//	return (e->rot_1);
+//	return (e->rev_rot_1);
+}
+
+void	rotate_pl(t_pivot *pivot)
+{
+	if (pivot->ind_rot == 1 || pivot->ind_rot == 2)
+	{
+		pivot->rrot = 0;
+		pivot->rrevrot = 0;
+		if (pivot->ind_rot == 1)
+		{
+			pivot->rev_rot_a = 0;
+			pivot->rot_b = 0;
+		}
+		if (pivot->ind_rot == 2)
+		{
+			pivot->rot_a = 0;
+			pivot->rev_rot_b = 0;
+		}
+	}
+	if (pivot->ind_rot == 3)
+	{
+		pivot->rot_a = pivot->temp_rot_a;
+		pivot->rot_b = pivot->temp_rot_b;
+		pivot->rrevrot = 0;
+		pivot->rev_rot_a = 0;
+		pivot->rev_rot_b = 0;
+	}
+	if (pivot->ind_rot == 4)
+	{
+		pivot->rev_rot_a = pivot->temp_rev_rot_a;
+		pivot->rev_rot_b = pivot->temp_rev_rot_b;
+		pivot->rrot = 0;
+		pivot->rot_a = 0;
+		pivot->rot_b = 0;
+	}
+}
+
+void	rotate_to(t_e *e, t_pivot *pivot)
+{
+	while (pivot->rot_a > 0)
+	{
+		ra(e);
+		ft_putendl("ra");
+		if_display(e, 1);
+		pivot->rot_a--;
+	}
+	while (pivot->rot_b > 0)
+	{
+		rb(e);
+		ft_putendl("rb");
+		if_display(e, 1);
+		pivot->rot_b--;
+	}
+	while (pivot->rev_rot_a > 0)
+	{
+		rra(e);
+		ft_putendl("rra");
+		if_display(e, 1);
+		pivot->rev_rot_a--;
+	}
+	while (pivot->rev_rot_b > 0)
+	{
+		rrb(e);
+		ft_putendl("rrb");
+		if_display(e, 1);
+		pivot->rev_rot_b--;
+	}
+	while (pivot->rrot > 0)
+	{
+		rr(e);
+		ft_putendl("rr");
+		if_display(e, 1);
+		pivot->rrot--;
+	}
+	while (pivot->rrevrot > 0)
+	{
+		rrr(e);
+		ft_putendl("rrr");
+		if_display(e, 1);
+		pivot->rrevrot--;
+	}
+}
+
+void	rotation_min(t_e *e)
+{
+	if (e->piv_1.nb_min_rot < e->piv_2.nb_min_rot && e->piv_1.nb_min_rot < e->piv_3.nb_min_rot && e->piv_1.nb_min_rot < e->piv_4.nb_min_rot)
+	{
+		rotate_pl(&e->piv_1);
+		rotate_to(e, &e->piv_1);
+		e->piv_1.pos_min++;
+	}
+	else if (e->piv_2.nb_min_rot < e->piv_1.nb_min_rot && e->piv_2.nb_min_rot < e->piv_3.nb_min_rot && e->piv_2.nb_min_rot < e->piv_4.nb_min_rot)
+	{
+		rotate_pl(&e->piv_2);
+		rotate_to(e, &e->piv_2);
+		e->piv_2.pos_min++;
+	}
+	else if (e->piv_3.nb_min_rot < e->piv_1.nb_min_rot && e->piv_3.nb_min_rot < e->piv_2.nb_min_rot && e->piv_3.nb_min_rot < e->piv_4.nb_min_rot)
+	{
+		rotate_pl(&e->piv_3);
+		rotate_to(e, &e->piv_3);
+		e->piv_3.pos_min++;
+	}
+	else
+	{
+		rotate_pl(&e->piv_4);
+		rotate_to(e, &e->piv_4);
+		e->piv_4.pos_min++;
+	}
+}
+
+/*int		search_med_next(t_e *e, int med)
 {
 	t_list_cir	*tmp;
 	//t_list_cir	*tmp_min;
@@ -85,7 +285,7 @@ int		search_med_next(t_e *e, int med)
 	if (e->rot_1 <= e->rev_rot_1)
 		return (e->rot_1);
 	return (e->rev_rot_1);
-}
+}*/
 
 int		search_med(t_e *e, int med)
 {
@@ -365,14 +565,14 @@ int		*create_tab_tri(t_e *e)
 int		push_swap_calc(t_e *e)
 {
 	t_list_cir	*tmp;
-	t_list_cir	*tmp1;
-	t_list_cir	*tmp_next;
+//	t_list_cir	*tmp1;
+//	t_list_cir	*tmp_next;
 	int			*tab;
 //	int			i;
-	int			case_med;
-	int			case_next;
-	int			rot;
-	int			rot_min_next;
+//	int			case_med;
+//	int			case_next;
+	//int			rot;
+	//int			rot_min_next;
 	int			size_la;
 //	i = 0;
 	if (test_small_list(e))
@@ -381,11 +581,19 @@ int		push_swap_calc(t_e *e)
 	if (tab == NULL)
 		return (0);
 	size_la = e->size_l;
-	case_med = (e->size_l - 1) / 2;
-	case_next = case_med + 1;
+	//case_med = (e->size_l - 1) / 2;
+	//case_next = case_med + 1;
+	e->piv_1.pos_min = 0;
+	e->piv_1.pos_max = (size_la - 1) / 4;
+	e->piv_2.pos_min = ((size_la - 1) / 4) + 1;
+	e->piv_2.pos_max = ((size_la - 1) / 2);
+	e->piv_3.pos_min = ((size_la - 1) / 2) + 1;
+	e->piv_3.pos_max = ((size_la - 1) / 2) + ((size_la - 1) / 4);
+	e->piv_4.pos_min = ((size_la - 1) / 2) + ((size_la - 1) / 4) + 1;
+	e->piv_4.pos_max = size_la - 1;
 	while (e->size_l > 0)
 	{
-		if (case_med >= 0)
+		/*if (case_med >= 0)
 			rot = search_med(e, tab[case_med]);
 		else
 			rot = -1;
@@ -411,20 +619,55 @@ int		push_swap_calc(t_e *e)
 			rb(e);
 			ft_putendl("rb");
 			if_display(e, 1);
-		}
+		}*/
+		if (e->piv_1.pos_min <= e->piv_1.pos_max)
+			search_pivot(e, &e->piv_1, tab[e->piv_1.pos_min]);
+		else
+			e->piv_1.nb_min_rot = 2 * size_la;
+		if (e->piv_2.pos_min <= e->piv_2.pos_max)
+			search_pivot(e, &e->piv_2, tab[e->piv_2.pos_min]);
+		else
+			e->piv_2.nb_min_rot = 2 * size_la;
+		if (e->piv_3.pos_min <= e->piv_3.pos_max)
+			search_pivot(e, &e->piv_3, tab[e->piv_3.pos_min]);
+		else
+			e->piv_3.nb_min_rot = 2 * size_la;
+		if (e->piv_4.pos_min <= e->piv_4.pos_max)
+			search_pivot(e, &e->piv_4, tab[e->piv_4.pos_min]);
+		else
+			e->piv_4.nb_min_rot = 2 * size_la;
+		rotation_min(e);
 		pb(e);
 		e->size_l--;
+		e->size_lb++;
 		ft_putendl("pb");
 		if_display(e, 1);
 	}
 	tmp = e->l_b->next;
-	tmp_next = tmp->next;
-	if (tmp->n < tmp_next->n)
+	e->rot = 0;
+	while (tmp->n != tab[0])
 	{
-		rb(e);
-		ft_putendl("rb");
-		if_display(e, 1);
+		e->rot++;
+		tmp = tmp->next;
 	}
+	e->rev_rot = e->size_lb - e->rot;
+	//tmp_next = tmp->next;
+	if (e->rot <= e->rev_rot)
+		while (e->rot > 0)
+		{
+			e->rot--;
+			rb(e);
+			ft_putendl("rb");
+			if_display(e, 1);
+		}
+	else
+		while (e->rev_rot > 0)
+		{
+			e->rev_rot--;
+			rrb(e);
+			ft_putendl("rrb");
+			if_display(e, 1);
+		}
 	tmp = e->l_b->next;
 	while (tmp != e->l_b)
 	{
